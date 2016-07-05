@@ -17,6 +17,7 @@ public class ExperimentRunEP {
 		
 	private ExperimentPrimeRunner experimentRunner;
 	private Thread backgroundThreadForRunner;
+	private long beginningExecutionTime;
 	
 	public ExperimentRunEP(ExperimentPrimeRunner experimentRunner) {
 		this.experimentRunner = experimentRunner;
@@ -46,6 +47,7 @@ public class ExperimentRunEP {
 		experimentStatus.setIteration(experimentRunner.getIteration());
 		experimentStatus.setContinueExperimenting(experimentRunner.isContinueExperimenting());
 		experimentStatus.setThreadAlreadyExecuting(backgroundThreadForRunner != null);
+		experimentStatus.setExecutionTime(System.currentTimeMillis() - beginningExecutionTime);
 		return experimentStatus;
 	}
 	
@@ -82,6 +84,7 @@ public class ExperimentRunEP {
 		if ((backgroundThreadForRunner != null) && (backgroundThreadForRunner.isAlive())) {
 			return false;
 		} else {
+			beginningExecutionTime = System.currentTimeMillis();
 			backgroundThreadForRunner = new Thread(experimentRunner);
 			backgroundThreadForRunner.start();
 			return true;

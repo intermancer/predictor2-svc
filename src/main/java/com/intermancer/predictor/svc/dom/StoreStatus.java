@@ -21,7 +21,9 @@ public class StoreStatus {
 	private double lowScore;
 	
 	private List<OrganismStoreRecord> top5Records;
-	private Map<Class, Long> histogram;
+	private Map<Class, Long> geneTypeHistogram;
+	private Map<Integer, Integer> organismSizeHistogram;
+	private Map<Integer, Integer> chromosomeSizeHistogram;
 	
 	public StoreStatus() {
 		// For Jackson
@@ -35,22 +37,42 @@ public class StoreStatus {
 			top5Records.add(organismStore.findByIndex(i));
 		}
 		setTop5Records(top5Records);
-		createHistogram(organismStore);
+		createHistograms(organismStore);
 		setHighScore(organismStore.getHighestScore());
 		setLowScore(organismStore.getLowestScore());
 	}
 
-	private void createHistogram(OrganismStore organismStore) {
-		histogram = new HashMap<Class, Long>();
+	private void createHistograms(OrganismStore organismStore) {
+		geneTypeHistogram = new HashMap<Class, Long>();
+		chromosomeSizeHistogram = new HashMap<Integer, Integer>();
+		organismSizeHistogram = new HashMap<Integer, Integer>();
 		for (int i = 0; i < organismStore.getCount(); i++) {
 			Organism organism = organismStore.findByIndex(i).getOrganism();
+			Integer organismSize = new Integer(organism.getChromosomes().size());
+			Integer organismSizeRecord = organismSizeHistogram.get(organismSize);
+			if (organismSizeRecord == null) {
+				organismSizeRecord = new Integer(1);
+			} else {
+				organismSizeRecord = new Integer(organismSizeRecord.intValue() + 1);
+			}
+			organismSizeHistogram.put(organismSize, organismSizeRecord);
+
 			for (Chromosome chromosome : organism.getChromosomes()) {
+				Integer chromosomeSize = new Integer(chromosome.getGenes().size());
+				Integer chromosomeSizeRecord = chromosomeSizeHistogram.get(chromosomeSize);
+				if (chromosomeSizeRecord == null) {
+					chromosomeSizeRecord = new Integer(1);
+				} else {
+					chromosomeSizeRecord = new Integer(chromosomeSizeRecord.intValue() + 1);
+				}
+				chromosomeSizeHistogram.put(chromosomeSize, chromosomeSizeRecord);
+				
 				for (Gene gene : chromosome.getGenes()) {
-					Long histogramCount = histogram.get(gene.getClass());
-					if (histogramCount == null) {
-						histogram.put(gene.getClass(), new Long(1));
+					Long geneTypeHistogramCount = geneTypeHistogram.get(gene.getClass());
+					if (geneTypeHistogramCount == null) {
+						geneTypeHistogram.put(gene.getClass(), new Long(1));
 					} else {
-						histogram.put(gene.getClass(), new Long(histogramCount.longValue() + 1));
+						geneTypeHistogram.put(gene.getClass(), new Long(geneTypeHistogramCount.longValue() + 1));
 					}
 				}
 			}
@@ -112,13 +134,13 @@ public class StoreStatus {
 	}
 
 	@JsonProperty
-	public Map<Class, Long> getHistogram() {
-		return histogram;
+	public Map<Class, Long> getGeneTypeHistogram() {
+		return geneTypeHistogram;
 	}
 
 	@JsonProperty
-	public void setHistogram(Map<Class, Long> histogram) {
-		this.histogram = histogram;
+	public void setGeneTypeHistogram(Map<Class, Long> geneTypeHistogram) {
+		this.geneTypeHistogram = geneTypeHistogram;
 	}
 	
 }

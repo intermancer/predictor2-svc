@@ -8,6 +8,7 @@ public class ExperimentStatus {
 	private int iteration;
 	private boolean continueExperimenting;
 	private boolean threadAlreadyExecuting;
+	private long executionTime;
 	
 	@JsonProperty
 	public int getCycles() {
@@ -48,5 +49,15 @@ public class ExperimentStatus {
 	public void setThreadAlreadyExecuting(boolean threadAlreadyExecuting) {
 		this.threadAlreadyExecuting = threadAlreadyExecuting;
 	}
+
+	@JsonProperty
+	public long executionTime() {
+		return executionTime;
+	}
+
+	@JsonProperty
+	public void setExecutionTime(long executionTime) {
+		this.executionTime = executionTime;
+	}	
 
 }
