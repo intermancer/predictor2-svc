@@ -33,7 +33,7 @@ public class ExperimentRunEP {
 	@Timed
 	public ExperimentStatus start() {
 		ExperimentStatus experimentStatus = getExperimentStatus();
-		experimentStatus.setThreadAlreadyExecuting(startBackgroundThreadSafely());
+		experimentStatus.setThreadAlreadyExecuting(!startBackgroundThreadSafely());
 		return experimentStatus;
 	}
 	
@@ -79,12 +79,12 @@ public class ExperimentRunEP {
 	}
 
 	private synchronized boolean startBackgroundThreadSafely() {
-		if (backgroundThreadForRunner != null) {
-			return true;
+		if ((backgroundThreadForRunner != null) && (backgroundThreadForRunner.isAlive())) {
+			return false;
 		} else {
 			backgroundThreadForRunner = new Thread(experimentRunner);
 			backgroundThreadForRunner.start();
-			return false;
+			return true;
 		}
 	}
 	

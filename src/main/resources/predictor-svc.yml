@@ -1,1 +1,14 @@
 maxStoreSize: 10000
+
+logging:
+
+  level: INFO
+  
+  loggers:
+  
+    "com.intermaner.predictor.experiment.ExperimentPrimeRunner": DEBUG
+    
+  appenders:
+    - type: console
+      threshold: DEBUG
+      target: stderr

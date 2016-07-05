@@ -1,9 +1,14 @@
 package com.intermancer.predictor.svc.dom;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.intermancer.predictor.gene.Chromosome;
+import com.intermancer.predictor.gene.Gene;
+import com.intermancer.predictor.organism.Organism;
 import com.intermancer.predictor.organism.store.OrganismStore;
 import com.intermancer.predictor.organism.store.OrganismStoreRecord;
 
@@ -16,6 +21,7 @@ public class StoreStatus {
 	private double lowScore;
 	
 	private List<OrganismStoreRecord> top5Records;
+	private Map<Class, Long> histogram;
 	
 	public StoreStatus() {
 		// For Jackson
@@ -29,8 +35,26 @@ public class StoreStatus {
 			top5Records.add(organismStore.findByIndex(i));
 		}
 		setTop5Records(top5Records);
+		createHistogram(organismStore);
 		setHighScore(organismStore.getHighestScore());
 		setLowScore(organismStore.getLowestScore());
+	}
+
+	private void createHistogram(OrganismStore organismStore) {
+		histogram = new HashMap<Class, Long>();
+		for (int i = 0; i < organismStore.getCount(); i++) {
+			Organism organism = organismStore.findByIndex(i).getOrganism();
+			for (Chromosome chromosome : organism.getChromosomes()) {
+				for (Gene gene : chromosome.getGenes()) {
+					Long histogramCount = histogram.get(gene.getClass());
+					if (histogramCount == null) {
+						histogram.put(gene.getClass(), new Long(1));
+					} else {
+						histogram.put(gene.getClass(), new Long(histogramCount.longValue() + 1));
+					}
+				}
+			}
+		}
 	}
 
 	public StoreStatus(int size) {
@@ -85,6 +109,16 @@ public class StoreStatus {
 	@JsonProperty
 	public void setLowScore(double lowScore) {
 		this.lowScore = lowScore;
-	}	
+	}
 
+	@JsonProperty
+	public Map<Class, Long> getHistogram() {
+		return histogram;
+	}
+
+	@JsonProperty
+	public void setHistogram(Map<Class, Long> histogram) {
+		this.histogram = histogram;
+	}
+	
 }
