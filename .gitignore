@@ -4,3 +4,5 @@
 /.settings
 /dependency-reduced-pom.xml
 logs/
+src/main/resources/com/intermancer/predictor/organism-store/
+src/test/resources/com/intermancer/predictor/test/data/organisms/

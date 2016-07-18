@@ -10,6 +10,9 @@ public class PredictorSvcConfig extends Configuration {
 	
 	@NotEmpty
 	private String maxStoreSize;
+	
+	@NotEmpty
+	private String organismStorePath;
 
 	@JsonProperty
 	public String getMaxStoreSize() {
@@ -19,6 +22,16 @@ public class PredictorSvcConfig extends Configuration {
 	@JsonProperty
 	public void setMaxStoreSize(String maxStoreSize) {
 		this.maxStoreSize = maxStoreSize;
+	}
+
+	@JsonProperty
+	public String getOrganismStorePath() {
+		return organismStorePath;
+	}
+
+	@JsonProperty
+	public void setOrganismStorePath(String organismStorePath) {
+		this.organismStorePath = organismStorePath;
 	}
 
 }

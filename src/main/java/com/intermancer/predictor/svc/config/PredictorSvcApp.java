@@ -1,8 +1,6 @@
 package com.intermancer.predictor.svc.config;
 
 import com.intermancer.predictor.experiment.ExperimentPrimeRunner;
-import com.intermancer.predictor.organism.store.InMemoryQuickAndDirtyOrganismStore;
-import com.intermancer.predictor.organism.store.OrganismStore;
 import com.intermancer.predictor.svc.endpoint.OrganismStoreStatusEP;
 import com.intermancer.predictor.svc.endpoint.ExperimentRunEP;
 import com.intermancer.predictor.svc.health.ExperimentPrimeRunnerHealthCheck;
@@ -35,8 +33,8 @@ public class PredictorSvcApp extends Application<PredictorSvcConfig> {
 		env.healthChecks().register("store", storeHC);
 	}
 
-	private void setUpEndpoints(PredictorSvcConfig config, Environment env) {
-		final OrganismStoreStatusEP organismStoreStatusEP = new OrganismStoreStatusEP(experimentRunner);
+	private void setUpEndpoints(PredictorSvcConfig config, Environment env) throws Exception {
+		final OrganismStoreStatusEP organismStoreStatusEP = new OrganismStoreStatusEP(experimentRunner, config);
 		env.jersey().register(organismStoreStatusEP);
 		final ExperimentRunEP experimentRunEP = new ExperimentRunEP(experimentRunner);
 		env.jersey().register(experimentRunEP);
