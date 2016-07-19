@@ -21,7 +21,7 @@ public class StoreStatus {
 	private double lowScore;
 	
 	private List<OrganismStoreRecord> top5Records;
-	private Map<Class, Long> geneTypeHistogram;
+	private Map<Class<? extends Gene>, Long> geneTypeHistogram;
 	private Map<Integer, Integer> organismSizeHistogram;
 	private Map<Integer, Integer> chromosomeSizeHistogram;
 	
@@ -43,7 +43,7 @@ public class StoreStatus {
 	}
 
 	private void createHistograms(OrganismStore organismStore) {
-		geneTypeHistogram = new HashMap<Class, Long>();
+		geneTypeHistogram = new HashMap<Class<? extends Gene>, Long>();
 		chromosomeSizeHistogram = new HashMap<Integer, Integer>();
 		organismSizeHistogram = new HashMap<Integer, Integer>();
 		for (int i = 0; i < organismStore.getCount(); i++) {
@@ -134,12 +134,12 @@ public class StoreStatus {
 	}
 
 	@JsonProperty
-	public Map<Class, Long> getGeneTypeHistogram() {
+	public Map<Class<? extends Gene>, Long> getGeneTypeHistogram() {
 		return geneTypeHistogram;
 	}
 
 	@JsonProperty
-	public void setGeneTypeHistogram(Map<Class, Long> geneTypeHistogram) {
+	public void setGeneTypeHistogram(Map<Class<? extends Gene>, Long> geneTypeHistogram) {
 		this.geneTypeHistogram = geneTypeHistogram;
 	}
 	

@@ -2,10 +2,8 @@ package com.intermancer.predictor.svc.endpoint;
 
 import java.nio.file.DirectoryStream;
 import java.nio.file.Files;
-import java.nio.file.LinkOption;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.nio.file.attribute.FileAttribute;
 
 import org.junit.Test;
 import static org.junit.Assert.*;
