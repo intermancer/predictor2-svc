@@ -7,7 +7,7 @@ logging:
   
   loggers:
   
-    "com.intermaner.predictor.experiment.ExperimentPrimeRunner": DEBUG
+    "com.intermancer.predictor.experiment.AnalysisExperimentListener": DEBUG
     
   appenders:
     - type: console

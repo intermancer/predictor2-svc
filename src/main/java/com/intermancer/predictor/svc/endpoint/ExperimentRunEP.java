@@ -6,7 +6,12 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
+
 import com.codahale.metrics.annotation.Timed;
+import com.intermancer.predictor.experiment.AnalysisExperimentListener;
+import com.intermancer.predictor.experiment.ExperimentContext;
 import com.intermancer.predictor.experiment.ExperimentPrimeRunner;
 import com.intermancer.predictor.experiment.ExperimentResult;
 import com.intermancer.predictor.svc.dom.ExperimentStatus;
@@ -14,13 +19,18 @@ import com.intermancer.predictor.svc.dom.ExperimentStatus;
 @Path("/experiment")
 @Produces(MediaType.APPLICATION_JSON)
 public class ExperimentRunEP {
+	
+	private static final Logger logger = LogManager.getLogger(ExperimentRunEP.class);
 		
 	private ExperimentPrimeRunner experimentRunner;
 	private Thread backgroundThreadForRunner;
 	private long beginningExecutionTime;
+	private AnalysisExperimentListener analysisListener;
 	
 	public ExperimentRunEP(ExperimentPrimeRunner experimentRunner) {
 		this.experimentRunner = experimentRunner;
+		analysisListener = new AnalysisExperimentListener(experimentRunner.getOrganismStore());
+		experimentRunner.addExperimentListener(analysisListener);
 	}
 	
 	@GET
@@ -43,8 +53,9 @@ public class ExperimentRunEP {
 	@Timed
 	public ExperimentStatus getExperimentStatus() {
 		ExperimentStatus experimentStatus = new ExperimentStatus();
-		experimentStatus.setCycles(experimentRunner.getCycles());
-		experimentStatus.setIteration(experimentRunner.getIteration());
+		ExperimentContext context = experimentRunner.getContext();
+		experimentStatus.setCycles(context.getCycles());
+		experimentStatus.setIteration(context.getIteration());
 		experimentStatus.setContinueExperimenting(experimentRunner.isContinueExperimenting());
 		experimentStatus.setThreadAlreadyExecuting(backgroundThreadForRunner != null);
 		experimentStatus.setExecutionTime(System.currentTimeMillis() - beginningExecutionTime);
@@ -54,7 +65,7 @@ public class ExperimentRunEP {
 	@Path("/setCycles/{cycles}")
 	@GET
 	public ExperimentStatus setCycles(@PathParam("cycles") Integer cycles) {
-		experimentRunner.setCycles(cycles);
+		experimentRunner.getContext().setCycles(cycles);
 		return getExperimentStatus();
 	}
 	
@@ -70,14 +81,17 @@ public class ExperimentRunEP {
 	public ExperimentStatus stop() {
 		ExperimentStatus experimentStatus = getExperimentStatus();
 		experimentRunner.setContinueExperimenting(false);
-		experimentRunner.setCycles(0);
+		experimentRunner.getContext().setCycles(0);
 		return experimentStatus;
 	}
 	
 	@Path("/lastExperimentResult")
 	@GET
 	public ExperimentResult getLastExperimentResult() {
-		return experimentRunner.getLastExperimentResult();
+		logger.info("Getting experiment result...");
+		ExperimentResult result = analysisListener.getExperimentResult();
+		logger.info(result.toString());
+		return result;
 	}
 
 	private synchronized boolean startBackgroundThreadSafely() {
