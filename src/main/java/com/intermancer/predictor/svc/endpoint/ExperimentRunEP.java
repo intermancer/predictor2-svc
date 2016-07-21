@@ -40,7 +40,7 @@ public class ExperimentRunEP {
 
 	public ExperimentRunEP(ExperimentPrimeRunner experimentRunner) {
 		this.experimentRunner = experimentRunner;
-		analysisListener = new AnalysisExperimentListener(experimentRunner.getOrganismStore());
+		analysisListener = new AnalysisExperimentListener(experimentRunner.getContext().getOrganismStore());
 		experimentRunner.addExperimentListener(analysisListener);
 	}
 
@@ -107,23 +107,22 @@ public class ExperimentRunEP {
 
 	@Path("/lastExperimentBestScoreGraph")
 	@GET
+	@Timed
 	@Produces("image/png")
 	public Response getLastExperimentBestScoreGraph() throws IOException {
 		TimeSeries bestScoreData = (TimeSeries) experimentRunner.getContext()
 				.getResource(AnalysisExperimentListener.BEST_SCORE_TIME_DATA_KEY);
 		TimeSeriesCollection dataset = new TimeSeriesCollection(bestScoreData);
-		JFreeChart timechart = ChartFactory.createTimeSeriesChart(  
-		         "Best Score Over Time", // Title  
-		         "millisecond",         // X-axis Label  
-		         "Score for best Organism",       // Y-axis Label  
-		         dataset,        // Dataset  
-		         true,          // Show legend  
-		         true,          // Use tooltips  
-		         false          // Generate URLs  
-		     ); 
+		JFreeChart timechart = ChartFactory.createTimeSeriesChart("Best Score Over Time", // Title
+				"millisecond", // X-axis Label
+				"Score for best Organism", // Y-axis Label
+				dataset, // Dataset
+				true, // Show legend
+				true, // Use tooltips
+				false // Generate URLs
+		);
 		SunPNGEncoderAdapter pngAdapter = new SunPNGEncoderAdapter();
-		byte[] imageData = pngAdapter.encode(
-				timechart.createBufferedImage(DEFAULT_CHART_WIDTH, DEFAULT_CHART_HEIGHT));
+		byte[] imageData = pngAdapter.encode(timechart.createBufferedImage(DEFAULT_CHART_WIDTH, DEFAULT_CHART_HEIGHT));
 		return Response.ok(imageData).build();
 	}
 
