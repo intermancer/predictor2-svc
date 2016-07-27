@@ -1,5 +1,6 @@
-maxStoreSize: 10000
+maxStoreSize: 1000
 organismStorePath: src/main/resources/com/intermancer/predictor/organism-store
+experimentCycles: 10000
 
 logging:
 

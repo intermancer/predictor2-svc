@@ -1,5 +1,7 @@
 package com.intermancer.predictor.svc.config;
 
+import javax.validation.constraints.NotNull;
+
 import org.hibernate.validator.constraints.NotEmpty;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -8,19 +10,22 @@ import io.dropwizard.Configuration;
 
 public class PredictorSvcConfig extends Configuration {
 	
-	@NotEmpty
-	private String maxStoreSize;
+	@NotNull
+	private Integer maxStoreSize;
 	
 	@NotEmpty
 	private String organismStorePath;
+	
+	@NotNull
+	private Integer experimentCycles;
 
 	@JsonProperty
-	public String getMaxStoreSize() {
+	public Integer getMaxStoreSize() {
 		return maxStoreSize;
 	}
 
 	@JsonProperty
-	public void setMaxStoreSize(String maxStoreSize) {
+	public void setMaxStoreSize(Integer maxStoreSize) {
 		this.maxStoreSize = maxStoreSize;
 	}
 
@@ -32,6 +37,16 @@ public class PredictorSvcConfig extends Configuration {
 	@JsonProperty
 	public void setOrganismStorePath(String organismStorePath) {
 		this.organismStorePath = organismStorePath;
+	}
+
+	@JsonProperty
+	public Integer getExperimentCycles() {
+		return experimentCycles;
+	}
+
+	@JsonProperty
+	public void setExperimentCycles(Integer experimentCycles) {
+		this.experimentCycles = experimentCycles;
 	}
 
 }

@@ -41,8 +41,10 @@ public class PredictorSvcApp extends Application<PredictorSvcConfig> {
 	}
 
 	private void setUpExperiment(PredictorSvcConfig config) throws Exception {
-		experimentRunner = new ExperimentPrimeRunner(true);
-		experimentRunner.setDiskStorePath(config.getOrganismStorePath());
+		experimentRunner = new ExperimentPrimeRunner();
+		experimentRunner.getContext().setDiskStorePath(config.getOrganismStorePath());
+		experimentRunner.getContext().getOrganismStore().setMaxSize(config.getMaxStoreSize());
+		experimentRunner.getContext().setCycles(config.getExperimentCycles());
 	}
 
 }

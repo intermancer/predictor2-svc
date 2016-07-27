@@ -13,7 +13,7 @@ import com.intermancer.predictor.svc.config.PredictorSvcConfig;
 
 public class OrganismStoreStatusEPTest {
 
-	private static final String TEST_STORE_PATH = "src/test/resources/com/intermancer/predictor/test/data/organisms";
+	private static final String TEST_STORE_PATH = "src/test/resources/com/intermancer/predictor/test/data/dump";
 
 	@Test
 	public void testDumpTop() throws Exception {

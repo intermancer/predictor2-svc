@@ -8,39 +8,45 @@ import com.intermancer.predictor.data.Quantum;
 import com.intermancer.predictor.evaluator.Evaluator;
 
 public class FeedAnalyzer implements FeedCycleListener {
-	
-	private static final int DEFAULT_DATA_SET_SIZE = 100;
 
-	private TimeSeries organismData;
+	public static final int DEFAULT_DATA_SET_SIZE = 100;
+
+	private TimeSeries predictedData;
 	private TimeSeries trainingData;
 
 	private Evaluator evaluator;
+	private int completeFeedCycleCount;
 
 	@Override
 	public void init(Feeder feeder) {
-		organismData = new TimeSeries("Organism data");
-		organismData.setMaximumItemCount(DEFAULT_DATA_SET_SIZE);
+		predictedData = new TimeSeries("Organism data");
+		predictedData.setMaximumItemCount(DEFAULT_DATA_SET_SIZE);
 		trainingData = new TimeSeries("Training data");
 		trainingData.setMaximumItemCount(DEFAULT_DATA_SET_SIZE);
 		evaluator = feeder.getEvaluator();
+		completeFeedCycleCount++;
 	}
 
 	@Override
 	public boolean handle(ConsumeResponse consumeResponse, Quantum quantum) {
-		long currentTime = System.currentTimeMillis();
-		organismData.addOrUpdate(new FixedMillisecond(currentTime),
-				quantum.getChannel(evaluator.getTargetOffset()).getValue().doubleValue());
-		trainingData.addOrUpdate(new FixedMillisecond(currentTime),
-				quantum.getChannel(evaluator.getEvaluationOffset()).getValue().doubleValue());
+		if (consumeResponse.equals(ConsumeResponse.CONSUME_COMPLETE)) {
+			trainingData.addOrUpdate(new FixedMillisecond(quantum.getTimestamp()), evaluator.getTrainingValue());
+			predictedData.addOrUpdate(new FixedMillisecond(quantum.getTimestamp()), evaluator.getPredictedValue());
+			completeFeedCycleCount++;
+		}
 		return true;
 	}
-	
-	public TimeSeries getOrganismData() {
-		return organismData;
+
+	public TimeSeries getPredictedData() {
+		return predictedData;
 	}
-	
+
 	public TimeSeries getTrainingData() {
 		return trainingData;
+	}
+
+	public int getCompleteFeedCycleCount() {
+		return completeFeedCycleCount;
 	}
 
 }

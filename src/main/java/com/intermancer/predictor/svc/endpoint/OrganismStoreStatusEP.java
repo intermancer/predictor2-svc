@@ -112,8 +112,8 @@ public class OrganismStoreStatusEP {
 
 	private Response generateGraph(FeedAnalyzer feedAnalyzer) throws IOException {
 		TimeSeriesCollection dataset = new TimeSeriesCollection();
-		TimeSeries organismData = feedAnalyzer.getOrganismData();
-		dataset.addSeries(organismData);
+		TimeSeries predictedData = feedAnalyzer.getPredictedData();
+		dataset.addSeries(predictedData);
 		TimeSeries trainingData = feedAnalyzer.getTrainingData();
 		dataset.addSeries(trainingData);
 		JFreeChart timechart = ChartFactory.createTimeSeriesChart("Organism Feed Chart", // Title
