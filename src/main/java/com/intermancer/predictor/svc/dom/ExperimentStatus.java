@@ -7,7 +7,6 @@ public class ExperimentStatus {
 	private int cycles;
 	private int iteration;
 	private boolean continueExperimenting;
-	private boolean threadAlreadyExecuting;
 	private long executionTime;
 	
 	@JsonProperty
@@ -38,16 +37,6 @@ public class ExperimentStatus {
 	@JsonProperty
 	public void setContinueExperimenting(boolean continueExperimenting) {
 		this.continueExperimenting = continueExperimenting;
-	}
-
-	@JsonProperty
-	public boolean isThreadAlreadyExecuting() {
-		return threadAlreadyExecuting;
-	}
-
-	@JsonProperty
-	public void setThreadAlreadyExecuting(boolean threadAlreadyExecuting) {
-		this.threadAlreadyExecuting = threadAlreadyExecuting;
 	}
 
 	@JsonProperty

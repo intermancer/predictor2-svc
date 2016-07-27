@@ -19,7 +19,7 @@ public class FeedAnalyzer implements FeedCycleListener {
 
 	@Override
 	public void init(Feeder feeder) {
-		predictedData = new TimeSeries("Organism data");
+		predictedData = new TimeSeries("Predicted data");
 		predictedData.setMaximumItemCount(DEFAULT_DATA_SET_SIZE);
 		trainingData = new TimeSeries("Training data");
 		trainingData.setMaximumItemCount(DEFAULT_DATA_SET_SIZE);

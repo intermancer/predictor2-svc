@@ -35,13 +35,12 @@ public class ExperimentRunEP {
 
 	private ExperimentPrimeRunner experimentRunner;
 	private Thread backgroundThreadForRunner;
-	private long beginningExecutionTime;
 	private AnalysisExperimentListener analysisListener;
 
 	public ExperimentRunEP(ExperimentPrimeRunner experimentRunner) {
 		this.experimentRunner = experimentRunner;
 		analysisListener = new AnalysisExperimentListener(experimentRunner.getContext().getOrganismStore());
-		experimentRunner.addExperimentListener(analysisListener);
+		experimentRunner.getContext().addExperimentListener(analysisListener);
 	}
 
 	@GET
@@ -54,9 +53,15 @@ public class ExperimentRunEP {
 	@GET
 	@Timed
 	public ExperimentStatus start() {
-		ExperimentStatus experimentStatus = getExperimentStatus();
-		experimentStatus.setThreadAlreadyExecuting(!startBackgroundThreadSafely());
-		return experimentStatus;
+		if ((backgroundThreadForRunner == null) || !backgroundThreadForRunner.isAlive()) {
+			synchronized (this) {
+				if ((backgroundThreadForRunner == null) || !backgroundThreadForRunner.isAlive()) {
+					backgroundThreadForRunner = new Thread(experimentRunner);
+					backgroundThreadForRunner.start();
+				}
+			}
+		}
+		return getExperimentStatus();
 	}
 
 	@Path("/status")
@@ -68,8 +73,7 @@ public class ExperimentRunEP {
 		experimentStatus.setCycles(context.getCycles());
 		experimentStatus.setIteration(context.getIteration());
 		experimentStatus.setContinueExperimenting(experimentRunner.isContinueExperimenting());
-		experimentStatus.setThreadAlreadyExecuting(backgroundThreadForRunner != null);
-		experimentStatus.setExecutionTime(System.currentTimeMillis() - beginningExecutionTime);
+		experimentStatus.setExecutionTime(System.currentTimeMillis() - context.getExperimentStartTime());
 		return experimentStatus;
 	}
 
@@ -124,17 +128,6 @@ public class ExperimentRunEP {
 		SunPNGEncoderAdapter pngAdapter = new SunPNGEncoderAdapter();
 		byte[] imageData = pngAdapter.encode(timechart.createBufferedImage(DEFAULT_CHART_WIDTH, DEFAULT_CHART_HEIGHT));
 		return Response.ok(imageData).build();
-	}
-
-	private synchronized boolean startBackgroundThreadSafely() {
-		if ((backgroundThreadForRunner != null) && (backgroundThreadForRunner.isAlive())) {
-			return false;
-		} else {
-			beginningExecutionTime = System.currentTimeMillis();
-			backgroundThreadForRunner = new Thread(experimentRunner);
-			backgroundThreadForRunner.start();
-			return true;
-		}
 	}
 
 }
