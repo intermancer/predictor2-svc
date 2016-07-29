@@ -1,20 +1,34 @@
+---
 maxStoreSize: 1000
-organismStorePath: src/main/resources/com/intermancer/predictor/organism-store
 experimentCycles: 10000
+
+organismStorePath: src/main/resources/com/intermancer/predictor/organism-store
 
 logging:
 
   level: INFO
   
   loggers:
-  
-    "com.intermancer.predictor.experiment.AnalysisExperimentListener": DEBUG
-    
-  appenders:
-    - type: console
-      threshold: DEBUG
-      target: stdout
+    "com.intermancer.predictor":
+      level: DEBUG
+      additive: false
+      appenders:
+        - type: file
+          # The file to which current statements will be logged.
+          currentLogFilename: ./logs/predictor.log
 
+          # When the log file rotates, the archived log will be renamed to this and gzipped. The
+          # %d is replaced with the previous day (yyyy-MM-dd). Custom rolling windows can be created
+          # by passing a SimpleDateFormat-compatible format as an argument: "%d{yyyy-MM-dd-hh}".
+          archivedLogFilenamePattern: ./logs/predictor%d.log.gz
+  
+          # The number of archived files to keep.
+          archivedFileCount: 5
+
+          # The timezone used to format dates. HINT: USE THE DEFAULT, UTC.
+          timeZone: UTC
+      
+  appenders:
     - type: file
       # The file to which current statements will be logged.
       currentLogFilename: ./logs/predictor-svc.log
@@ -29,3 +43,4 @@ logging:
 
       # The timezone used to format dates. HINT: USE THE DEFAULT, UTC.
       timeZone: UTC
+...
