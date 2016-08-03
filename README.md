@@ -32,6 +32,10 @@ Set the current experiment to continue running even after it has completed the n
 
     http://localhost:8080/experiment/setContinueExperimenting/true
     
+If you set the Predictor to continue experimenting, you have to "turn it off" at some point with the following call:
+
+    http://localhost:8080/experiment/setContinueExperimenting/false
+    
 A more detailed summary of the last experiment (I should really make this the default status since I calculate it every feed cycle):
 
     http://localhost:8080/experiment/lastExperimentResult
